@@ -1,0 +1,59 @@
+{# Zola makes an artificial distinction between two types of webpages: "pages" and "sections".
+ # The following allows us to refer to the current webpage as `thispage`,
+ # regardless of whether it is classified as a page or a section.
+ #}
+{% if page %}
+  {% set thispage = page %}
+{% elif section %}
+  {% set thispage = section %}
+{% endif %}
+
+<!DOCTYPE html>
+<html lang="{{ thispage.extra.language }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- TODO ajouter titre de la page -->
+    <title>Grégoire Locqueville | {{ thispage.title | safe }}</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/favicon/site.webmanifest">
+
+    <link rel="stylesheet" href="{{ config.base_url }}/style.css">
+  </head>
+  <body>
+    <div id="global-container">
+      <div id="sidebar-container">
+        <a id="site-title" rel="author" href="/">Grégoire Locqueville</a>
+        <nav id="site-menu">
+          <ul>
+            {% if thispage.extra.language == "fr" %}
+              <li><a href="/">À propos</a></li>
+              <li><a href="/projets">Projets</a></li>
+              <li><a href="/publications">Publications</a></li>
+              <li><a href="/cv">CV</a></li>
+              <li><a href="/en/{{ thispage.extra.translation }}">EN</a></li>
+            {% else %}
+              <li><a href="/en/">About</a></li>
+              <li><a href="/en/projects">Projects</a></li>
+              <li><a href="/en/publications">Publications</a></li>
+              <li><a href="/en/resume">Résumé</a></li>
+              <li><a href="/{{ thispage.extra.translation }}">FR</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      <div id="content-container">
+        <div id="post-title">
+          <a href="@/pages/about.md">{{ thispage.title | safe }}</a>
+        </div>
+        <div id="post-content">
+          {% block content %} {% endblock %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

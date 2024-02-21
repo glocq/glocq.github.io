@@ -1,0 +1,276 @@
+/*********
+ * Fonts *
+ *********/
+
+ @font-face {
+    font-family: "IBM Plex Sans";
+    src: url("fonts/ibmplexsans-medium.woff2") format("woff2"),
+         url("fonts/ibmplexsans-medium.woff")  format("woff");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: "Source Sans Pro";
+    src: url("fonts/sourcesanspro-regular.woff2") format("woff2"),
+         url("fonts/sourcesanspro-regular.woff")  format("woff");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: "Alegreya";
+    src: url("fonts/alegreya-italic.woff2") format("woff2-variations"),
+         url("fonts/alegreya-italic.woff")  format("woff");
+    font-weight: 400 900;
+    font-style: italic;
+  }
+  
+  @font-face {
+    font-family: "EB Garamond";
+    src: url("fonts/ebgaramond.woff2") format("woff2-variations"),
+         url("fonts/ebgaramond.woff")  format("woff");
+    font-weight: 400 800;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: "EB Garamond";
+    src: url("fonts/ebgaramond-italic.woff2") format("woff2-variations"),
+         url("fonts/ebgaramond-italic.woff")  format("woff");
+    font-weight: 400 800;
+    font-style: italic;
+  }
+  
+  @font-face {
+    font-family: "Fira Code";
+    src: url("fonts/firacode.woff2") format("woff2-variations"),
+         url("fonts/firacode.woff")  format("woff");
+    font-weight: 300 700;
+    font-style: normal;
+  }
+  
+  
+  
+  /* Make the sensible choice for box sizing a default */
+  
+  html {
+    box-sizing: border-box;
+  }
+  
+  *, *:before, *:after {
+      box-sizing: inherit;
+  }
+  
+  :root {
+    --header-height: 100px;
+  }
+  
+  body {
+    margin: 0px;
+  }
+  
+  
+  
+  
+  a {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+  }
+  
+  a:hover {
+    color: rgb(138, 138, 138);
+  }
+  
+  #global-container {
+    display: grid;
+    padding-top: 73px;
+    padding-left: 73px;
+    padding-right: 73px;
+    padding-bottom: 0px;
+    min-height: 100vh;
+  }
+  
+  #sidebar-container {
+    text-align: center;
+  }
+  
+  #site-title {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 30px;
+  }
+  
+  #site-menu {
+    margin-top: 20px;
+  }
+  
+  #site-menu ul {
+    margin-top: 0px;
+    padding: 0px;
+    list-style: none;
+  }
+  
+  #site-menu li {
+    margin-top: 0px;
+    margin-bottom: 5px;
+  }
+  
+  #site-menu a {
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 20px;
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  #content-container {
+    margin-bottom: 30px;
+  }
+  
+  #post-title {
+    font-family: "Alegreya", serif;
+    font-size: 25px;
+    font-weight: 500;
+    font-style: italic;
+  }
+  
+  #post-content {
+    font-family: "EB Garamond", serif;
+    font-size: 18px;
+    font-weight: 400;
+    font-style: normal;
+    text-align: justify;
+  }
+  
+  #post-content a {
+    text-decoration: underline;
+  }
+  
+  #post-content h2 {
+    font-family: "Alegreya";
+    font-size: 21px;
+    font-weight: 500;
+    font-style: italic;
+  }
+  
+  #post-content strong {
+    font-weight: 650;
+  }
+  
+  #post-content li {
+    margin: 15px 0;
+  }
+  
+  #post-content ul {
+    padding-left: 20px;
+  }
+  
+  code {
+    font-family: "Fira Code", monospace;
+    font-weight: 400;
+    font-size: 16px;
+  }
+  
+  #post-content pre[class*="language-"] {
+    overflow-x: auto;
+    overflow: scroll;
+  }
+  
+  #post-content .footnotes-sep {
+    border-width: 1px 0px 0px 0px;
+  }
+  
+  #footer {
+    bottom: 0px;
+    border-top: 1px solid;
+    border-color: black;
+    padding-top: 8px;
+    padding-bottom: 14px;
+    text-align: center;
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 18px;
+    font-weight: normal;
+  }
+  
+  .webring-link {
+    padding-left: 20px;
+    padding-right: 20px;
+    font-style: italic;
+  }
+  
+  .webring-arrow {
+    position: relative;
+    top: 1px;
+    font-size: 26px;
+  }
+  
+  /**
+   * Big screen
+   */
+  
+  @media (min-width: 992px) {
+  
+    #global-container {
+      padding-top: 108px;
+      column-gap: 70px;
+      grid-template-rows: 1fr auto;
+      grid-template-columns: auto 1fr;
+    }
+  
+    #sidebar-container {
+      text-align: right;
+    }
+  
+    #content-container {
+      max-width: 700px;
+    }
+  
+    #footer {
+      grid-column-start: 1;
+      grid-column-end: -1;
+    }
+  }
+  
+  /**
+   * Medium and small screens
+   */
+  
+  @media (max-width: 991px) {
+  
+    #global-container {
+      grid-template-rows: auto 1fr auto;
+    }
+  
+    #site-menu ul {
+      line-height: 1.5;
+    }
+  
+    #site-menu li {
+      display: inline-block;
+      padding-left: 7px;
+      padding-right: 7px;
+    }
+  }
+  
+  /**
+   * Small screens
+   */
+  
+  @media (max-width: 599px) {
+  
+    #global-container {
+      padding-top: 30px;
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-bottom: 0px;
+    }
+  
+    /* This is a dirty hack to force
+     * the content of my code blocks to overflow;
+     * I have no idea how to do otherwise :(
+     */
+    #post-content pre[class*="language-"] {
+      max-width: calc(100vw - 40px);
+    }
+  }
