@@ -14,9 +14,9 @@ Voks est arrivé en deuxième place du prestigieux [concours Guthman d'instrumen
 
 <iframe width="320" height="180" src="https://www.youtube-nocookie.com/embed/jJdVsv_-WIo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-* **Amati** : Un plugin VST pour coder en direct ses propres effets audio en Faust.
+* **Amati** : [Un plugin VST pour coder en direct ses propres effets audio en Faust](https://github.com/glocq/Amati/).
 
-<img src="/assets/images/amati.png" alt="amati" width="320"/>
+<img src="/images/amati.png" alt="amati" width="320"/>
 
 Musique
 --------

@@ -13,9 +13,9 @@ Voks won the second prize of the prestigious [Guthman Musical Instrument Competi
 
 <iframe width="320" height="180" src="https://www.youtube-nocookie.com/embed/jJdVsv_-WIo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-* **Amati** : A VST plugin for audio effect live-coding in Faust.
+* **Amati** : [A VST plugin for audio effect live-coding in Faust](https://github.com/glocq/Amati/).
 
-<img src="/assets/images/amati.png" alt="amati" width="320"/>
+<img src="/images/amati.png" alt="amati" width="320"/>
 
 Music
 ------
