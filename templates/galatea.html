@@ -1,0 +1,32 @@
+{# Zola makes an artificial distinction between two types of webpages: "pages" and "sections".
+ # The following allows us to refer to the current webpage as `thispage`,
+ # regardless of whether it is classified as a page or a section.
+ #}
+{% if page %}
+  {% set thispage = page %}
+{% elif section %}
+  {% set thispage = section %}
+{% endif %}
+
+<!DOCTYPE html>
+<html lang="{{ thispage.extra.language }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grégoire Locqueville | Galatea</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/favicon/site.webmanifest">
+
+  </head>
+  <body>
+    {% if thispage.extra.language == "fr" %}
+      <script src="{{ config.base_url }}/galatea/index.js"></script>
+    {% else %}
+      <script src="{{ config.base_url }}/galatea/index_en.js"></script>
+    {% endif %}
+  </body>
+</html>
