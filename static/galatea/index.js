@@ -10352,11 +10352,11 @@
   }();
   var bottomText = /* @__PURE__ */ function() {
     if (currentLanguage instanceof English) {
-      return append9(text_("Made with love by "))(append9(a([href_("https://glocq.github.io/en/")])([text_("Gr\xE9goire Locqueville")]))(append9(text_(". Source code available "))(append9(a([href_("https://github.com/glocq/galatea")])([text_("on Github")]))(text_(".")))));
+      return append9(text_("Made with love by "))(append9(a([href_("https://glocq.github.io/en/")])([text_("Gr\xE9goire Locqueville")]))(append9(text_(". Source code and documentation available "))(append9(a([href_("https://github.com/glocq/galatea")])([text_("on Github")]))(text_(".")))));
     }
     ;
     if (currentLanguage instanceof French) {
-      return append9(text_("Fait avec amour par "))(append9(a([href_("https://glocq.github.io/")])([text_("Gr\xE9goire Locqueville")]))(append9(text_(". Code source disponible "))(append9(a([href_("https://github.com/glocq/galatea")])([text_("sur Github")]))(text_(".")))));
+      return append9(text_("Fait avec amour par "))(append9(a([href_("https://glocq.github.io/")])([text_("Gr\xE9goire Locqueville")]))(append9(text_(". Code source et documentation disponibles "))(append9(a([href_("https://github.com/glocq/galatea")])([text_("sur Github")]))(text_(".")))));
     }
     ;
     throw new Error("Failed pattern match at Internationalization (line 16, column 14 - line 30, column 26): " + [currentLanguage.constructor.name]);

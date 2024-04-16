@@ -7,6 +7,11 @@ translation = "projets"
 
 Software
 ---------
+
+* **Galatea** : [A cross-platform tool](https://glocq.github.io/en/galatea/) to control MIDI synthesizers using a graphic tablet or a mouse.
+
+<img src="/images/galatea.png" alt="amati" width="320"/>
+
 * **Voks** : An instrument for vocal synthesis controlled with gestures. Designed with [Xiao Xiao](http://portfolio.xiaosquared.com/) during my PhD, supervised by [Christophe d'Alessandro](http://www.lam.jussieu.fr/Membres/DAlessandro/index.php) and [Boris Doval](http://www.lam.jussieu.fr/Membres/Doval/index.php).
 
 Voks won the second prize of the prestigious [Guthman Musical Instrument Competition](https://guthman.gatech.edu/2022-finalists#tvoks), whose final took place on the Georgia Tech campus in March 2022.
