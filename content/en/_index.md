@@ -8,8 +8,12 @@ translation = ""
 Welcome to my webpage! I'm an engineer and musician, passionate about music, mathematics and computer science.
 I'm especially interested in the building and use of digital tools for artistic creation.
 
-I defended [my Ph.D. thesis](https://www.theses.fr/s267227), then worked as a research engineer, at Sorbonne Université, at [LAM](http://www.lam.jussieu.fr/). Before that, I graduated from the Centrale Paris general engineering school. I'm currently working as a research engineer at [LAM](http://www.lam.jussieu.fr/), where I carry on my work on vocal synthesis. Besides, I play the violin and the piano, I sing and make music on my computer.
+I'm currently working as a fullstack developer (Haskell, Purescript) at [ISC-PIF](https://iscpif.fr/?lang=en), in Paris, on the [Gargantext](https://iscpif.fr/projects/gargantext/?lang=en) project. I hold a Ph.D. in engineering from Sorbonne Université, where I worked on [gesture-controlled vocal synthesis](https://www.theses.fr/s267227), and an engineering degree from École Centrale Paris. Besides, I play the violin and the piano, I sing and make music on my computer.
 
-You can see my projects on [Github](https://github.com/glocq), and listen to a few of my compositions on [my Youtube channel](https://www.youtube.com/channel/UC4X_Sho9tdLGUgJI4QmOMSw) or [my Soundcloud profile](https://soundcloud.com/eigensandwich). If you happen to wonder about the music that I listen to myself, feel free to check out [my long Spotify playlist](https://open.spotify.com/playlist/1gIvCptvejJjQC9xfNfI5B?si=def56ffe97f04b9e).
+Here are links you might be interested in:
 
-I'm looking for a job right now! I would like to work as an engineer on digital projects pertaining to artistic creation in the broad sense (not necessarily music!). Feel free to send me an email at *gregoireloc (at) gmail.com* (in French, English, or German). You can also find me on [Linkedin](https://www.linkedin.com/in/gr%C3%A9goire-locqueville-8817a883).
+* [My Github profile](https://github.com/glocq) : a few personal software projects
+* [My Youtube channel](https://www.youtube.com/channel/UC4X_Sho9tdLGUgJI4QmOMSw) and [my Soundcloud account](https://soundcloud.com/eigensandwich) : a few personal musical projects
+* [Ma long Spotify playlist](https://open.spotify.com/playlist/1gIvCptvejJjQC9xfNfI5B?si=def56ffe97f04b9e) : music I listen to
+* [My Linkedin profile](https://www.linkedin.com/in/gr%C3%A9goire-locqueville-8817a883)
+* My email address, should you want to reach out to me directly : *gregoireloc (at) gmail.com*

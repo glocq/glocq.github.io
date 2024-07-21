@@ -8,10 +8,8 @@ The website relies on [Zola](https://www.getzola.org/). To build it, install Zol
 TODO
 -----
 
-* Update obsolete info
+* Update CV
 * Update layout
-* Set up github actions so that any push to this results in a live site update
-* Add Galatea demo
 
 Reusing all or part of the website's code
 ------------------------------------------
