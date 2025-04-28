@@ -45,7 +45,7 @@
          x="88.907906"
          y="48.547276">The <tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
-   id="tspan4">Arrangement</tspan> datatype</tspan></text>
+   id="tspan4">Disposition</tspan> datatype</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8.66129px;font-family:Cantarell;-inkscape-font-specification:Cantarell;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-dasharray:none;stroke-opacity:1"
@@ -57,7 +57,7 @@
          x="90.981354"
          y="104.58723"><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
-           id="tspan5">candidateArrangements</tspan></tspan></text>
+           id="tspan5">candidateDispositions</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8.66129px;font-family:Cantarell;-inkscape-font-specification:Cantarell;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-dasharray:none;stroke-opacity:1"
@@ -69,6 +69,6 @@
          x="100.79969"
          y="135.12895"><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
-           id="tspan7">validArrangements</tspan></tspan></text>
+           id="tspan7">validDispositions</tspan></tspan></text>
   </g>
 </svg>
