@@ -1,0 +1,176 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grégoire Locqueville | Tricks and Conventions</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+
+    <link rel="me" href="https://mathstodon.xyz/@glocq">
+    <link rel="stylesheet" href="https:&#x2F;&#x2F;glocq.github.io/style.css">
+  </head>
+  <body>
+    <div id="global-container">
+      <div id="sidebar-container">
+        <a id="site-title" rel="author" href="/">Grégoire Locqueville</a>
+        <nav id="site-menu">
+          <ul>
+            
+              <li><a href="/en/">About</a></li>
+              <li><a href="/en/projects">Projects</a></li>
+              <li><a href="/en/resume">Résumé</a></li>
+              <li><a href="/en/blog">Blog</a></li>
+              <li><a href="/blog&#x2F;20250324">FR</a></li>
+            
+          </ul>
+        </nav>
+      </div>
+      <div id="content-container">
+        <div id="post-title">
+          <a href="">Tricks and Conventions</a>
+        </div>
+        <div id="post-content">
+          
+<p><em>March 24, 2025</em></p>
+<p>I want to talk about an equation that sometimes comes up in online pop sci math expositions, namely 0.999... = 1.<sup class="footnote-reference"><a href="#1">1</a></sup></p>
+<p>Any time it is the subject of a blog post or an online video, this equation sparks a heated debate in the comments. Things generally go as follows:</p>
+<ol>
+<li>The original post/video provides a proof that the equation is true,</li>
+<li><em>Skeptics</em> start protesting in the comments, invoking all sorts of informal arguments, trying to articulate the fact that the equation is <em>obviously false</em>,</li>
+<li>Then <em>believers</em> tell them off, mocking them for not agreeing with math's objectively true conclusions,</li>
+</ol>
+<p>and the whole argument generally goes as well as you would expect from a public online discussion.<sup class="footnote-reference"><a href="#2">2</a></sup></p>
+<h2 id="a-clever-proof">A Clever Proof</h2>
+<p>What does a typical one of those proofs of 0.999... = 1 look like? There's a common one that goes like this:</p>
+<ol>
+<li>Start with the number 1.</li>
+<li>Divide it by 3. You get 0.333...</li>
+<li>Multiply that number back by 3, and you get 0.999...</li>
+<li>But since all you did was divide and multiply 1 by the same number 3, you must end up with the same number you started with, namely 1! Hence 0.999... is the same as 1. QED!</li>
+</ol>
+<p>I don't know about you, but I think this proof feels like some kind of magic trick. If you've ever followed math lessons, chances are you've been exposed to fallacious proofs that <em>e.g.</em> 1 = 0, where reasonable-looking algebraic manipulations hide forbidden divisions by zero; and this might have taught you to be wary of fishy-looking proofs you've never talked to before. And this proof sure looks fishy!</p>
+<p>And yet I can guarantee you there's nothing <em>technically</em> wrong with it. Sure, each step could be spelt out in more detail, but there's no actual cheating involved. Is that it then, do we just have to accept what the ✨math✨ tells us without questioning it? — Not only do I believe that you don't <em>have to</em>, I believe that you <em>shouldn't</em> blindly accept it, lest you miss something important.</p>
+<h2 id="what-s-in-a-decimal-number">What's in a Decimal Number?</h2>
+<p>By &quot;decimal numbers&quot;, I mean &quot;numbers that can be written with <em>finitely</em> many digits after the decimal dot&quot;, like 1234.5 or 1.203. In this section, I'd just like to make sure that you and I are on the same page about what those represent exactly before we go on to talk about numbers with <em>infinite</em> decimal expansion.</p>
+<p>Let's try to write those numbers using only <em>whole numbers</em> and basic operations (addition, multiplication, division). Let's take 1.203 as an example. We can start by laying out each digit like so:</p>
+<ul>
+<li>1</li>
+<li>2</li>
+<li>0</li>
+<li>3</li>
+</ul>
+<p>The first digit &quot;1&quot; we can leave alone, since it stands for exactly what it looks like. The second one &quot;2&quot; stands for the number of tenths, so let's divide it by 10. The third one we'll divide by 10x10 = 100, and so on:</p>
+<ul>
+<li>1</li>
+<li>2/10</li>
+<li>0/(10x10)</li>
+<li>3/(10x10x10)</li>
+</ul>
+<p>then we can just add all that together, and that's what mathematicians have agreed the string &quot;1.203&quot; should <em>mean</em>:</p>
+<p>1.203 = 1+2/10+0/(10x10)+3/(10x10x10)</p>
+<p>Easy enough, right? Not much to get excited about here. The real fun begins when there's an infinite number of digits after the dot. Before we get into what it <em>means</em> to write infinitely many digits after the dot, though, we'll need to get acquainted with the notion of a <em>limit</em>.</p>
+<h2 id="limits">Limits</h2>
+<p>Forget about decimal dots, and consider the following sequence of numbers:</p>
+<p>1/1 (also known as 1), 1/2, 1/3, 1/4, ...<sup class="footnote-reference"><a href="#3">3</a></sup></p>
+<p>Clearly, no single one of those numbers is equal to 0. Yet you can probably sense that the sequence as a whole is related to the number 0. How so? If you wanted to make this idea precise, you might say something along the lines of:</p>
+<p><em>No matter how close I want to get to 0, there's always some number in the sequence after which all numbers are at least that close to 0.</em></p>
+<p>Say you're only interested in numbers that are at most 0.1 units away from 0. Well in our infinite sequence, all numbers to the right of 1/10 are less than 0.1 units away from 0! Want to be more strict, and only accept numbers at most 0.000001 units away from 0? No problem, just start at 1/1000000 in the sequence: all the numbers to the right of that are close enough to 0 according to your new criterion.</p>
+<p>When an infinite sequence of numbers gets close to some number in this way, mathematicians say that the sequence has it as a <strong>limit</strong>.<sup class="footnote-reference"><a href="#4">4</a></sup></p>
+<p>Now on to digits!</p>
+<h2 id="non-necessarily-decimal-numbers">Non-(necessarily) Decimal Numbers</h2>
+<p>Consider some number with infinitely many digits after the dot, say pi. As a reminder, pi is a number whose decimal expansion starts with 3.14159... Let's construct a sequence of numbers in the following way: we start with 3, and at each step, we add one digit after the decimal dot:</p>
+<ul>
+<li>3</li>
+<li>3.1</li>
+<li>3.14</li>
+<li>3.141</li>
+<li>3.1415</li>
+<li>...</li>
+</ul>
+<p>Now taken individually, each of those numbers is a decimal number, and we've seen how to deal with those in the previous section — nothing controversial there. But now we have an <em>infinite sequence</em> of such numbers, and there's something we can do about infinite sequences: ask whether they have a limit! Does the sequence above have a limit? It sure does — and the limit is, of course, pi.<sup class="footnote-reference"><a href="#5">5</a></sup></p>
+<p>In general, sequences built from a decimal string in this way always have exactly one limit. And so mathematicians have agreed that <em>the number represented by that string is said limit</em>.</p>
+<p>Now we have all we need to understand our original issue!</p>
+<p>Let's recap what we've (re)learnt:</p>
+<ul>
+<li>We've clarified what we mean when we write a number with <em>finitely</em> many digits, in terms of an expression involving only whole numbers;</li>
+<li>We've defined the notion of a <em>limit</em>;</li>
+<li>Using this notion, we've also clarified what we mean when we write a number with <em>infinitely</em> many digits.</li>
+</ul>
+<p>Now what happens if we apply this to the number 0.999...? We get a sequence</p>
+<ul>
+<li>0 = 0</li>
+<li>0.9 = 0 + 1/10</li>
+<li>0.99 = 0 + 1/10 + 1/(10x10)</li>
+<li>0.999 = 0 + 1/10 + 1/(10x10) + 1/(10x10x10)</li>
+<li>...</li>
+</ul>
+<p>And we need to determine its limit. To do so, we can observe that the sequence can be rewritten like so</p>
+<ul>
+<li>1 - 1</li>
+<li>1 - 1/10</li>
+<li>1 - 1/(10x10)</li>
+<li>1 - 1/(10x10x10)</li>
+<li>...</li>
+</ul>
+<p>which can be proven has 1 as a limit.</p>
+<h2 id="slow-and-methodical-solves-the-case">Slow and Methodical Solves the Case</h2>
+<p>So we're done: we proved the original claim that 0.999... = 1 — except we did so with a much lengthier proof than the &quot;clever proof&quot; laid out at the beginning of this post! What's the point then?</p>
+<p>My complaint about the &quot;clever proof&quot; was that it felt like a trick — a series of steps, admittedly simple, which can each be checked to be correct, but which doesn't offer much in the way of understanding what's actually going on. My aim with the above was to provide you with the knowledge required to be able to take a step back and ask yourself the right questions. From a bird's eye view, what have we essentially done?</p>
+<ul>
+<li>We've asked what it actually <em>means</em> to write 0.999... Implicitly, this suggests that a string of digits<sup class="footnote-reference"><a href="#6">6</a></sup> is not exactly the same as a number, but that it is only a <em>representation</em> of a number.</li>
+<li>While I did claim that a given string of digits⁶ may not represent more than one number, two distinct strings of digits may well represent the same number. This actually shouldn't come as a surprise, though: you're probably already aware that, say, 7.1900 and 7.19 stand for the same number!</li>
+<li>Equipped with this new perspective, faced with a limit to compute, we've done the natural thing to do, namely, compute the limit.</li>
+</ul>
+<p>The answer to our original question emerged naturally from a methodical effort, and along with it came a clearer understanding of the whole matter. I guess that's the first of two ideas I've been trying to communicate in this blog post: when faced with intellectual problems, tricks and strokes of genius may make you feel smart, but patient and purposeful efforts will generally come with a longer-lasting reward.</p>
+<h2 id="it-s-all-convention">It's All Convention</h2>
+<p>The second idea I'd like to communicate is more important in math than you might suspect; namely, the relativity of it all. We started by looking at a debate over whether two numbers that did not look equal actually were equal; but looking closer, we found out that what we were looking at was not exactly numbers, but <em>representations</em> of numbers. This specific way of representing numbers using strings of digits⁶ is not inscribed in nature in the same way that, say, the law of universal gravitation is: humans invented it, and had to teach it to one another, enough so that it has now become ubiquitous. But as ubiquitous as it is, it's still just a convention!</p>
+<p>More generally, everything mathematicians do is based on conventions: they write down definitions of mathematical objects and make up names and notations to talk about them; and they use the definitions, names and notations that their peers have devised. As a result, they are acutely aware of the distinction between human conventions and the absolute, intangible ideas that lie behind.</p>
+<p>I feel like the mathematicians' attitude of systematically questioning the absolute/relative quality of what you're talking about is second nature to them, and yet is often lost on the general public. Yet I believe it's good mental hygiene: next time you disagree with someone, try to evaluate how much of your conflict is a matter of convention — and maybe you'll realize you were just using the same word to talk about something different, or that the &quot;spelling error&quot; you were about to complain about wasn't actually a hindrance to clear and respectful communication!</p>
+<p>P.S. Before I leave you, here's some food for thought, in the form of one technical question, and one more &quot;philosophical&quot; one.</p>
+<ol>
+<li>
+<p>So there are numbers that have several corresponding decimal representations. Are you able to tell which ones, exactly?</p>
+</li>
+<li>
+<p>Now that we understand better the relation between decimal representations and numbers, and that we've learnt to ask what is absolute and what is convention, a new question might arise: <em>what even is a number, exactly?</em> There are actually several answers to that question, none of which are obvious<sup class="footnote-reference"><a href="#7">7</a></sup> But that's a story for another time...</p>
+</li>
+</ol>
+<h2 id="notes">Notes</h2>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p><em>I hope you will forgive me for not writing out the left-hand side of the equation in full, but just so we're clear: the &quot;...&quot; here is meant to stand for an infinite number of nines. Note that although the subject is controversial, there doesn't seem to be any disagreement about the meaning of those three dots, so we won't dwell on them.</em></p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p><em>Ok, I might be exaggerating here, but I remember there being a clear disagreement in the exchanges I witnessed.</em></p>
+</div>
+<div class="footnote-definition" id="3"><sup class="footnote-definition-label">3</sup>
+<p><em>Note that while previously, we were talking about one number (with infinitely many digits), here we are considering</em> an infinite sequence <em>of numbers. It so happens that some of those numbers (like 1/2) can be written with finitely many digits (0.5), while others (1/3) have infinitely many (0.333...), but</em> that's not the point: <em>for now, I want you to think about all those numbers without caring about how to write them.</em></p>
+</div>
+<div class="footnote-definition" id="4"><sup class="footnote-definition-label">4</sup>
+<p><em>Note that a sequence of numbers does not necessarily have a limit: in the sequence 1, 2, 1, 2, ..., for instance, there is no number that gets approached by this sequence in the way described above. However, you can prove (which I'm not going to do here) that a sequence cannot have more than one distinct limits.</em></p>
+</div>
+<div class="footnote-definition" id="5"><sup class="footnote-definition-label">5</sup>
+<p><em>The way I talk about it makes it seem like it's a happy coincidence. Of course it's not, the decimal expansion 3.14159... was specifically constructed in such a way that the associated sequence has the number pi as a limit.</em></p>
+</div>
+<div class="footnote-definition" id="6"><sup class="footnote-definition-label">6</sup>
+<p><em>I'm being a little imprecise with the phrase &quot;string of digits&quot; here. To be perfectly rigorous, I should have said &quot;finite string of digits, possibly followed by a dot and another finite or infinite string of digits&quot;... but it just isn't as catchy, you know.</em></p>
+</div>
+<div class="footnote-definition" id="7"><sup class="footnote-definition-label">7</sup>
+<p><em>For a taste of what the answers look like, have a peek at <a href="https://en.wikipedia.org/wiki/Construction_of_the_real_numbers">https://en.wikipedia.org/wiki/Construction_of_the_real_numbers</a></em></p>
+</div>
+
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

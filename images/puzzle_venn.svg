@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="297mm"
+   height="183mm"
+   viewBox="0 0 297 183"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1">
+    <ellipse
+       style="fill:#ff7f7f;fill-opacity:1;stroke:#f60000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="path1"
+       cx="147.015"
+       cy="92.998123"
+       rx="136.79425"
+       ry="74.238625" />
+    <ellipse
+       style="fill:#7e79dc;fill-opacity:1;stroke:#0007f6;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="path2"
+       cx="144.97311"
+       cy="118.61436"
+       rx="91.96711"
+       ry="35.908363" />
+    <ellipse
+       style="fill:#77b96e;fill-opacity:1;stroke:#008d03;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="path3"
+       cx="144.04498"
+       cy="132.16499"
+       rx="63.589775"
+       ry="16.069775" />
+    <text
+       xml:space="preserve"
+       style="font-size:8.66129px;font-family:Cantarell;-inkscape-font-specification:Cantarell;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-dasharray:none;stroke-opacity:1"
+       x="88.907906"
+       y="48.547276"
+       id="text3"><tspan
+         id="tspan3"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
+         x="88.907906"
+         y="48.547276">The <tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
+   id="tspan4">Disposition</tspan> datatype</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.66129px;font-family:Cantarell;-inkscape-font-specification:Cantarell;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-dasharray:none;stroke-opacity:1"
+       x="90.981354"
+       y="104.58723"
+       id="text6"><tspan
+         id="tspan6"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
+         x="90.981354"
+         y="104.58723"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
+           id="tspan5">candidateDispositions</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.66129px;font-family:Cantarell;-inkscape-font-specification:Cantarell;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-dasharray:none;stroke-opacity:1"
+       x="100.79969"
+       y="135.12895"
+       id="text8"><tspan
+         id="tspan8"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
+         x="100.79969"
+         y="135.12895"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.09197;stroke-opacity:1"
+           id="tspan7">validDispositions</tspan></tspan></text>
+  </g>
+</svg>

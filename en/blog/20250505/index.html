@@ -1,0 +1,286 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grégoire Locqueville | Solving a Wooden Puzzle Using Haskell (Part II)</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+
+    <link rel="me" href="https://mathstodon.xyz/@glocq">
+    <link rel="stylesheet" href="https:&#x2F;&#x2F;glocq.github.io/style.css">
+  </head>
+  <body>
+    <div id="global-container">
+      <div id="sidebar-container">
+        <a id="site-title" rel="author" href="/">Grégoire Locqueville</a>
+        <nav id="site-menu">
+          <ul>
+            
+              <li><a href="/en/">About</a></li>
+              <li><a href="/en/projects">Projects</a></li>
+              <li><a href="/en/resume">Résumé</a></li>
+              <li><a href="/en/blog">Blog</a></li>
+              <li><a href="/blog&#x2F;20250505">FR</a></li>
+            
+          </ul>
+        </nav>
+      </div>
+      <div id="content-container">
+        <div id="post-title">
+          <a href="">Solving a Wooden Puzzle Using Haskell (Part II)</a>
+        </div>
+        <div id="post-content">
+          
+<p><em>May 5, 2025</em></p>
+<p><em>This post is the second of a two-part series that describes my computer-assisted
+solution to a physical puzzle I got. You will probably want to read the beginning
+of <a href="https://glocq.github.io/en/blog/20250428/">part I</a> to understand what the puzzle is about, but other
+than that this post is pretty self-contained :)</em></p>
+<p>Last time we defined a list <code>allValidPieces</code> of all the ways that a piece may
+be fitted in the box. Its type is the nested list <code>[[V3 Int]]</code>, because we
+represent a single piece as a list of the voxels that compose it. Looks like
+we're going to deal with lots of nested lists... Let's try to prevent confusion
+by defining a type synonym:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">type </span><span style="color:#d08770;">Shape </span><span>= [</span><span style="color:#d08770;">V3 Int</span><span>]
+</span></code></pre>
+<p><code>Shape</code> will typically represent a puzzle piece, but it can represent any chunk
+of voxels. We'll use it below to represent a set of pieces lumped together.</p>
+<h2 id="compatibility-matters">Compatibility Matters</h2>
+<p>Ok, moving on. Let's recall what we are after: we need to find a way to fit 25
+pieces in the box simultaneously. In other words, we're looking for a
+subcollection of <code>allValidPieces</code> that has 25 elements, such that no two
+elements interpenetrate one another. Which begs the question: what does it mean,
+formally, for two shapes to interpenetrate one another?</p>
+<p>Recall that we represented a piece as the list of voxels that compose it. Two
+shapes, then, are in conflict when they have at least one voxel in common — in
+other words, when there is any voxel from the first that is also an element of
+the second:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">conflict </span><span style="color:#b48ead;">:: Shape -&gt; Shape -&gt; Bool
+</span><span>conflict shape1 shape2 = any (\voxel -&gt; elem voxel shape2) shape1
+</span></code></pre>
+<p>At this point, I'd say we're finally done modeling the problem and can start
+looking for a solution!</p>
+<p>25 pieces is a lot, we can't just repeatedly pick lists of 25 pieces until we
+come across one where pieces happen to not conflict with one another. We need to
+build our solution step by step, and for that, we need a way to find out what
+pieces are compatible with a collection of pieces already in place. Out of
+performance concerns, we won't encode the collection of pieces already in place
+using a list of <code>Shape</code>s, but we'll lump them all together in one single
+<code>Shape</code> composed of the voxels that are already occupied by some piece:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">newCompatiblePieces </span><span style="color:#b48ead;">:: Shape   </span><span style="color:#65737e;">-- ^ Voxels to avoid
+</span><span>                    </span><span style="color:#b48ead;">-&gt;</span><span> [</span><span style="color:#b48ead;">Shape</span><span>] </span><span style="color:#65737e;">-- ^ All pieces that do not conflict with the input shape
+</span><span>newCompatiblePieces occupiedVoxels =
+</span><span>  filter
+</span><span>    (\candidatePiece -&gt; not $ conflict candidatePiece occupiedVoxels)
+</span><span>    allValidPieces
+</span></code></pre>
+<p>Note that in the above function, we are looking for all pieces that do not
+conflict with the input, but the pieces in the output list will generally
+conflict with one another. That's not a problem: the output list should not be
+seen as a list of pieces to add, but as a list of <em>options</em> which we can choose
+from.</p>
+<p>Of course, some of the potentially compatible pieces we find, while they do not
+directly conflict with any piece already in place, will lead to a dead-end
+nevertheless: there is no solution compatible with both the pieces in place and
+the new piece. That's actually kind of the point of our puzzle!: we can't solve
+it just by adding piece after piece as long as they fit.</p>
+<p>With an imperative apprach, we'd deal with this problem using explicit
+<a href="https://en.wikipedia.org/wiki/Backtracking">backtracking</a>, keeping track, at
+each step, of the pieces we've tried, and going back one step whenever we don't
+find what we're looking for. This is hard to think about! In Haskell, we
+have a cheat code, and that's called:</p>
+<h2 id="parallel-universes-with-the-list-monad">Parallel Universes with the <code>List</code> Monad</h2>
+<p>I like to think of monads and <code>do</code> notation as a way for the programmer to pretend
+they have access to a pure value when they don't actually. In the <code>IO</code> monad,
+writing <code>userInput &lt;- getLine</code> is a way to pretend you have a value of type
+<code>String</code>, even though you need to wait for <code>getLine</code> to be executed at runtime
+for the value to actually be defined. In the <code>Maybe</code> monad, writing
+<code>result &lt;- someComputation</code> is a way to pretend that <code>someComputation</code> yielded
+a normal value, which you can access under the name <code>result</code>, even though
+<code>someComputation</code> might be <code>Nothing</code> — in which case the whole <code>do</code> block becomes
+<code>Nothing</code>.</p>
+<p>Enter the <code>List</code> monad (also known as the <code>[]</code> monad, but that's harder to
+pronounce). If <code>someList</code> is a list of type <code>[a]</code>, you can write
+<code>value &lt;- someList</code> and proceed as though <code>value</code> were an actual value of type
+<code>a</code>, even though there may be zero or more than one elements in the list.
+What mechanism makes that possible? When you write <code>value1 &lt;- someList1</code>, the
+universe <em>splits into several parallel subuniverses</em>, and everything you write
+under that line in the do block is computed/executed as many times as there are
+elements in <code>someList1</code>. If you write <code>value2 &lt;- someList2</code> below that, <em>each
+of those parallel universes splits into parallel universes again</em>, one for each
+element of <code>someList2</code>. If you're not careful, the number of branches can explode
+quickly!</p>
+<p>With that in mind, we can implement our function that recursively looks for
+<em>subsolutions</em> of the puzzle: lists of <em>n</em> compatible pieces (for some input <em>n</em>
+between 0 and 25) that do not conflict with a collection of pieces (again,
+lumped together into a single <code>Shape</code>) assumed to already be in place:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">subsolutions </span><span style="color:#b48ead;">:: Int   </span><span style="color:#65737e;">-- ^ How many pieces should be in the subsolution we&#39;re looking for?
+</span><span>             </span><span style="color:#b48ead;">-&gt; Shape </span><span style="color:#65737e;">-- ^ Unavailable voxels, already occupied by some piece
+</span><span>             </span><span style="color:#b48ead;">-&gt;</span><span> [[</span><span style="color:#b48ead;">Shape</span><span>]] </span><span style="color:#65737e;">-- ^ List of subsolutions, each of which is itself a list of pieces
+</span><span>subsolutions </span><span style="color:#d08770;">0</span><span> _ = [</span><span style="color:#d08770;">[]</span><span>]
+</span><span>subsolutions n occupiedVoxels = </span><span style="color:#b48ead;">do
+</span><span>  newPiece &lt;- filter
+</span><span>                (\piece -&gt; not (conflict occupiedVoxels piece))
+</span><span>                allValidPieces
+</span><span>  </span><span style="color:#b48ead;">let</span><span> updatedOccupiedVoxels = newPiece &lt;&gt; occupiedVoxels
+</span><span>  otherPieces &lt;- subsolutions (n - </span><span style="color:#d08770;">1</span><span>) updatedOccupiedVoxels
+</span><span>  return $ newPiece : otherPieces
+</span></code></pre>
+<p>The base case is <em>n</em> = 0: there is exactly one solution with zero pieces, that's
+the list with no piece in it. Now look at what happens in the other branch:</p>
+<ul>
+<li>We look for candidate pieces (on the right of the first <code>&lt;-</code>), that is, pieces
+that do not conflict with our list of occupied voxels;</li>
+<li>Using the magical <code>&lt;-</code> symbol, we split the universe into as many parallel
+universes as there are candidate pieces; in each subuniverse, <code>newPiece</code>
+will be defined to be the corresponding candidate piece;</li>
+<li>In each parallel universe, we perform a recursive call, looking for the list
+of subsolutions that are compatible with both the original list of occupied
+voxels and our new piece;</li>
+<li>Again, we split each universe into many parallel subuniverses, one for each
+of those subsolutions;</li>
+<li>For each universe, we return the resulting subsolution. The actual result is
+a list with one value for each universe.</li>
+</ul>
+<p>Now you might think &quot;gosh, that's <em>a lot</em> of universes to split into, how is my
+computer ever going to deal with those?&quot;, and you'd be right. There are two
+reasons for hope, though:</p>
+<ul>
+<li>Some combinations of pieces will not allow for any new piece to be fit into
+the box. In that case, the corresponding list of subsolutions will be empty,
+which means that instead of splitting the corresponding universe into
+subuniverses, the whole branch will die off. In other words, sometimes the
+total number of universes will decrease.</li>
+<li>Non-strict evaluation! This is all implemented with Haskell's lazy list type.
+This means that as long as you're not trying to print the whole list of
+solutions, not all parallel universes will actually be explored. Typically,
+you'll want to print only the first element of the list of solutions, in
+which case your program will stop as soon as it's found one.</li>
+</ul>
+<p>Anyway, the final list of solutions (there may be more than one!) to our problem
+is then:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">allSolutions </span><span style="color:#b48ead;">::</span><span> [[</span><span style="color:#b48ead;">Shape</span><span>]]
+</span><span>allSolutions = subsolutions </span><span style="color:#d08770;">25 []
+</span></code></pre>
+<p>and we get an arbitrary solution by taking the first element of the list with
+<code>head</code>.</p>
+<p>Alas, my computer hangs and never returns a value. It seems that we were too
+careless splitting the universe many times, and the computer can't handle the
+resulting combinatorial explosion. Honestly, this isn't too surprising. Our
+approach is as bruteforce as it gets — which is actually good for a first
+approach: as Donald Knuth puts it,
+<a href="https://en.wikiquote.org/wiki/Donald_Knuth">&quot;premature optimization is the root of all evil (or at least most of it) in programming&quot;</a>.</p>
+<p>Ok, but what now? I guess we'll need to dig into optimization literature, or
+maybe turn the problem into a SAT formula and fire up a SAT solver... Just
+kidding! We're still going to bruteforce our problem, we just need to be smarter
+about it.</p>
+<h2 id="a-slightly-smarter-solution">A Slightly Smarter Solution</h2>
+<p>We don't need to look far, in the way we built our final list of solutions, to
+find sources of redundancy — (sub)solutions that are equivalent to one another,
+but are nevertheless registered separately. For two given compatible piece
+dispositions <code>piece1</code> and <code>piece2</code>, for instance, <code>[piece1, piece2]</code> and
+<code>[piece2, piece1]</code> count as two subsolutions, even though they obviously
+represent the same situation. The search will be performed once for each, and
+if it leads nowhere, well... too bad, you will have wasted twice as much time.
+And this will be true for any combination of compatible pieces, at any recursive
+call. No wonder the algorithm is inefficient!</p>
+<p>So, how are we to reduce the search space? Well, assume that you have a
+subsolution and you're looking for a piece to add to it in order to get closer
+to the full solution. Now take any free voxel <code>freeVoxel</code>, that is, any voxel
+that is not part of any of the subsolution's pieces. Since we ultimately want
+to fill the 5x5x5 cube, we know for sure that the full solution will feature a
+piece that contains <code>freeVoxel</code>. So we can restrict our search to only pieces
+that do!</p>
+<p>Let's first implement a function that picks any free voxel in the box. We just
+define a list composed of all of the box's voxels, filter out those that are
+contained in one of the pieces in place, and take the first element of the
+filtered list using <code>head</code>:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">pickFreeVoxel </span><span style="color:#b48ead;">:: Shape -&gt; V3 Int
+</span><span>pickFreeVoxel alreadyOccupiedVoxels =
+</span><span>  head $
+</span><span>  filter (\voxel -&gt; not $ elem voxel alreadyOccupiedVoxels) $
+</span><span>  [</span><span style="color:#d08770;">V3</span><span> x y z | x &lt;- [</span><span style="color:#d08770;">1</span><span>..</span><span style="color:#d08770;">5</span><span>], y &lt;- [</span><span style="color:#d08770;">1</span><span>..</span><span style="color:#d08770;">5</span><span>], z &lt;- [</span><span style="color:#d08770;">1</span><span>..</span><span style="color:#d08770;">5</span><span>]]
+</span></code></pre>
+<p>It isn't hard, now, to modify our <code>subsolutions</code> function so that it implements
+our &quot;smarter&quot; bruteforce algorithm:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">subsolutionsSmart </span><span style="color:#b48ead;">:: Int   </span><span style="color:#65737e;">-- ^ How many pieces should be in the subsolution we&#39;re looking for?
+</span><span>                  </span><span style="color:#b48ead;">-&gt; Shape </span><span style="color:#65737e;">-- ^ Unavailable voxels, already occupied by some piece
+</span><span>                  </span><span style="color:#b48ead;">-&gt;</span><span> [[</span><span style="color:#b48ead;">Shape</span><span>]]
+</span><span>subsolutionsSmart </span><span style="color:#d08770;">0</span><span> _ = [</span><span style="color:#d08770;">[]</span><span>]
+</span><span>subsolutionsSmart n occupiedVoxels = </span><span style="color:#b48ead;">do
+</span><span>  </span><span style="color:#b48ead;">let</span><span> freeVoxel = pickFreeVoxel occupiedVoxels
+</span><span>  newPiece &lt;- filter
+</span><span>                  (\piece -&gt; elem freeVoxel piece &amp;&amp;
+</span><span>                             not (conflict occupiedVoxels piece)
+</span><span>                  )
+</span><span>                  allValidPieces
+</span><span>  </span><span style="color:#b48ead;">let</span><span> updatedOccupiedVoxels = newPiece &lt;&gt; occupiedVoxels
+</span><span>  otherPieces &lt;- subsolutionsSmart (n - </span><span style="color:#d08770;">1</span><span>) updatedOccupiedVoxels
+</span><span>  return $ newPiece : otherPieces
+</span></code></pre>
+<p>The only change is that each time we're looking for a new piece, we pick a
+<code>freeVoxel</code> and filter out pieces that don't contain it. Note that while
+<code>newPiece</code> is on the left of a left arrow <code>&lt;-</code>, because we want to be
+considering <em>all</em> pieces in the list, <code>freeVoxel</code> is defined using a normal
+<code>let</code> assignment. That's because, even though <em>any</em> free voxel will do, we only
+want to consider one.</p>
+<p>And finally, to get the full list of solutions, we do exactly the same as above:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">allSolutionsSmart </span><span style="color:#b48ead;">::</span><span> [[</span><span style="color:#b48ead;">Shape</span><span>]]
+</span><span>allSolutionsSmart = subsolutionsSmart </span><span style="color:#d08770;">25 []
+</span></code></pre>
+<p>We only want one solution, so we print the first element (or <code>head</code>) of that
+list, and we measure the time it takes:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">main </span><span style="color:#b48ead;">:: IO </span><span>()
+</span><span>main = </span><span style="color:#b48ead;">do
+</span><span>  startTime &lt;- getCurrentTime
+</span><span>  print $ head allSolutionsSmart
+</span><span>  endTime &lt;- getCurrentTime
+</span><span>  putStrLn $ &quot;</span><span style="color:#a3be8c;">Found in </span><span>&quot; &lt;&gt;
+</span><span>             show (realToFrac (diffUTCTime endTime startTime) :: </span><span style="color:#d08770;">Double</span><span>) &lt;&gt;
+</span><span>             &quot;</span><span style="color:#a3be8c;"> seconds.</span><span>&quot;
+</span></code></pre>
+<p>And my computer does find a solution, in a little more than 30 minutes!</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I don't have a moral to this story, it was just a fun case study. But here are
+three suggestions of ways the program could be improved.</p>
+<ul>
+<li>
+<p>Optimization. On the one hand, the fact that a bruteforcing approach was able
+to find us a solution at all is pretty nice. On the other hand, 30 minutes is
+still quite a long time! The algorithm could probably be optimized, for instance
+by favoring subsolutions that are more &quot;compact&quot;, for some definition of &quot;compact&quot;...</p>
+</li>
+<li>
+<p>If you run the program at home, the output you'll get is a frankly illegible
+list of lists of vector values that look like <code>V3 2 4 1</code>. I was able to test my
+solution in practice by manually drawing the corresponding pieces, and then packing the pieces
+according to my drawing, but I won't lie, the process was pretty tedious. So
+another possible improvement could be to find a way to pretty-print the solution(s)
+the algorithm finds. It's not obvious how to do so, especially with text output!</p>
+</li>
+<li>
+<p>Finally, you might want to get all possible solutions, and for that,
+to get rid of solutions that are rotated and/or mirrored versions of other
+solutions. Better yet, you could try to avoid generating them in the first
+place (in the same   way that we found a trick to avoid generating solutions
+that were the same up to a rearrangement of the piece order).</p>
+</li>
+</ul>
+<p>Feel free to tell me if you make progress on either front!</p>
+
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
