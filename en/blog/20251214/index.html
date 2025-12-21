@@ -1,0 +1,152 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grégoire Locqueville | Easy Type-Level Flags In Haskell</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+
+    <link rel="me" href="https://mathstodon.xyz/@glocq">
+    <link rel="stylesheet" href="https:&#x2F;&#x2F;glocq.github.io/style.css">
+  </head>
+  <body>
+    <div id="global-container">
+      <div id="sidebar-container">
+        <a id="site-title" rel="author" href="/">Grégoire Locqueville</a>
+        <nav id="site-menu">
+          <ul>
+            
+              <li><a href="/en/">About</a></li>
+              <li><a href="/en/projects">Projects</a></li>
+              <li><a href="/en/resume">Résumé</a></li>
+              <li><a href="/en/blog">Blog</a></li>
+              <li><a href="/blog&#x2F;20251214">FR</a></li>
+            
+          </ul>
+        </nav>
+      </div>
+      <div id="content-container">
+        <div id="post-title">
+          <a href="">Easy Type-Level Flags In Haskell</a>
+        </div>
+        <div id="post-content">
+          
+<p><em>December 14, 2025</em></p>
+<p>Say you're implementing an interpreter for arithmetical expressions in Haskell. You define the following data type:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">data </span><span style="color:#d08770;">Expr
+</span><span>  = </span><span style="color:#d08770;">Literal Double
+</span><span>  | </span><span style="color:#d08770;">Plus Expr Expr
+</span><span>  | </span><span style="color:#d08770;">Minus Expr Expr
+</span><span>  | </span><span style="color:#d08770;">Times Expr Expr
+</span><span>  | </span><span style="color:#d08770;">Div Expr Expr
+</span></code></pre>
+<p>Now you and I know that allowing division is a little risky, because your user might attempt to divide by zero at some point, which is totally forbidden. There are plenty of ways to deal with this at evaluation time; typically, you'll wrap the result of the computation in a <code>Maybe</code> or some other type constructor that encodes the fact that an error was encountered.</p>
+<p>But say you really want a way to prevent divisions by zero at compile time. Of course you won't know if a value is zero until you've evaluated it, so there's no perfect solution. But you might decide to define another data type which forbids divisions:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">data </span><span style="color:#d08770;">SafeExpr
+</span><span>  = </span><span style="color:#d08770;">SafeLiteral Double
+</span><span>  | </span><span style="color:#d08770;">SafePlus SafeExpr SafeExpr
+</span><span>  | </span><span style="color:#d08770;">SafeMinus SafeExpr SafeExpr
+</span><span>  | </span><span style="color:#d08770;">SafeTimes SafeExpr SafeExpr
+</span></code></pre>
+<p>This works, and now you don't have to worry about divisions by zero anymore. Even better, you can introduce unsafety in your codebase in a controlled way, by using <code>SafeExpr</code> when you want a strict guarantee that no division by zero will occur, and <code>Expr</code> when you're ok with dealing with division-by-zero errors. For instance, you may make an &quot;unsafe&quot; toggle available to your user. When the toggle is off, your code uses <code>SafeExpr</code>, and when it's on, it uses <code>Expr</code>.</p>
+<p>The issue with this is... you now have two data types! This means you have to duplicate code: not only the above <code>data</code> declarations, but also any function that produces or consumes an expression tree will need to be written twice. We don't want that. How can we avoid it?</p>
+<p>Some ideas (which I haven't all explored fully, so some might not actually work!) might include:</p>
+<ul>
+<li><strong>Template Haskell</strong>: letting the compiler write the duplicated code for you;</li>
+<li><strong>Generics</strong>: inferring information based on the shape of your data type;</li>
+<li><strong>Type-level wizardry</strong>: you might want to tag your expression type with something like a type-level boolean (<code>'Bool</code>/<code>'False</code>), and make sure that the <code>Div</code> constructor never gets used when your type is tagged with <code>'False</code>.</li>
+<li><strong>Writing an explicit converter between our data types</strong>: This one I'd say is the best of those suboptimal solutions. It requires no compiler extensions and whatnot, and not much boilerplate. That is... unless you want to conditionally exclude another branch based on another condition. Then you need 2x2=4 datatypes, and conversion between each compatible pair among those! And the problem only gets worse the more conditions you add...</li>
+</ul>
+<p>All but the last of those solutions add complexity to your program, if only by requiring the use of compiler extensions. But what if I told you there's a much simpler solution that doesn't add any complexity? No code duplication, no boilerplate, no compiler extensions, no loss of portability!</p>
+<h2 id="a-trivial-yet-magical-type">A Trivial Yet Magical Type</h2>
+<p><em>We'll make use of the type <code>Void</code>, so here's a refresher. If you're familiar with <code>Void</code>, you may skip this section :)</em></p>
+<p><code>Void</code> (from the module <code>Data.Void</code>) is a very simple type: it has no constructor, and only one destructor <code>absurd :: Void -&gt; a</code>. You may think of it as the empty type, the type that has no values.</p>
+<p>Think about how weird the fact that it has no constructor is: though you may use <code>Void</code> in your type signatures, your program will never actually hold a value of type <code>Void</code>!</p>
+<p>The destructor is also weird: look at how <code>a</code> is a free type variable --- it may stand for any type you like! Consider, for instance, the type <code>Reason</code> of strings that explain why your ex left you, or the type <code>WorldPeace</code> of <code>IO</code> actions that achieve world peace. With a value <code>v</code> of type <code>Void</code>, all you'd have to do is write <code>main = putStrLn (absurd v :: Reason) &gt;&gt; (absurd v :: WorldPeace)</code> in <code>Main.hs</code>, and get both the reason why your ex left, and world peace, at the same time! The catch, obviously, is that you will never get hold of a value of type <code>Void</code> like <code>v</code>.</p>
+<p>(Note that this does not mean we can't achieve world peace! I'm just saying if we can, it's not as easy as that. And we should not be deterred by the fact that it does look very difficult. Regarding your ex, though, you should probably just move on)</p>
+<p>In a way, <code>Void</code> is like the reverse (or <em>dual</em>) of <code>()</code>: just like you can't construct a value of <code>Void</code> unless you already essentially have a value of <code>Void</code>, you can't consume a value of <code>()</code>, that is, write a function that has <code>()</code> as an input, unless your function essentially outputs <code>()</code>. So <code>Void</code> is just as trivial as <code>()</code>, but it has that touch of magic that <code>()</code> lacks.</p>
+<p>Now we're good to go on with our solution!</p>
+<h2 id="a-laughingly-simple-type-class">A Laughingly Simple Type Class</h2>
+<p>Consider the following type class (<code>TFlag</code> stands for &quot;type flag&quot;):</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">class </span><span style="color:#a3be8c;">TFlag </span><span style="color:#bf616a;">b </span><span style="color:#b48ead;">where
+</span><span>  </span><span style="color:#8fa1b3;">whenFlag </span><span style="color:#b48ead;">:: </span><span style="color:#bf616a;">b </span><span style="color:#b48ead;">-&gt; </span><span style="color:#bf616a;">f b </span><span style="color:#b48ead;">-&gt; </span><span style="color:#bf616a;">f </span><span>()
+</span></code></pre>
+<p>Notice how the <code>f</code> type parameter does not have any constraints (except for it being of kind <code>* -&gt; *</code>): it does not need to be a functor or anything of the like. Let's not dwell on the meaning of this class and its method <code>whenFlag</code>, though, before looking at its instances. Actually, there are only two! The two types that implement <code>TFlag</code> are the unit type <code>()</code> and the void type <code>Void</code>.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">instance TFlag </span><span>() </span><span style="color:#b48ead;">where
+</span><span>  whenFlag w x = x
+</span><span>
+</span><span style="color:#b48ead;">instance TFlag Void where
+</span><span>  whenFlag w x = absurd w
+</span></code></pre>
+<p>Both instances are trivial, but each is trivial in a different way. To implement <code>whenFlag</code>, we need to construct a value of type <code>f ()</code>. Let's see how it's done in each case:</p>
+<ul>
+<li>In the instance for <code>()</code>, <code>b</code> happens to be <code>()</code> already. So the second argument (which has type <code>f b</code>) actually has type <code>f ()</code>, exactly what we need. How lucky! Surely we won't be as lucky in the other instance?</li>
+<li>In the instance for <code>Void</code>, the second argument has type <code>f Void</code>, which is indeed not what we need. Again, <code>f</code> is not a functor or anything like that, so we don't have anything to work with it. We need to turn to the first argument <code>w</code>... its type, <code>Void</code>, has nothing to do with <code>f ()</code>, but since <code>Void</code> is this magical type, all we need is to apply <code>absurd</code> and we get a value of whatever type we want! Of course this was all just a dream, we never had a value of type <code>Void</code> in the first place.</li>
+</ul>
+<p><em>Note: if you allow the use of compiler extensions, the <code>EmptyCase</code> extension allows you to pattern match on <code>Void</code>, by writing:</em></p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">instance TFlag Void where
+</span><span>  whenFlag w x = </span><span style="color:#b48ead;">case</span><span> w </span><span style="color:#b48ead;">of</span><span> {}
+</span></code></pre>
+<p>What <code>whenFlag</code> is doing is basically telling you &quot;give me a <em>proof</em>, or a <em>witness</em> <code>w</code>, that the value <code>x</code> has type <code>f ()</code>, and I'll let you use it&quot;. This is trivial! But it lets us write code that only works when <code>b</code> is <code>()</code> in contexts when <code>b</code> is <code>Void</code>. Let's see how to use it in practice!</p>
+<h2 id="back-to-our-expression-data-type">Back To Our Expression Data Type</h2>
+<p>Here's how we can use the <code>TFlag</code> class to implement a type-safe optional type constructor:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">data </span><span style="color:#d08770;">Expr</span><span> unsafeFlag
+</span><span>  = </span><span style="color:#d08770;">Literal Double
+</span><span>  | </span><span style="color:#d08770;">Plus</span><span> (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag) (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag)
+</span><span>  | </span><span style="color:#d08770;">Minus</span><span> (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag) (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag)
+</span><span>  | </span><span style="color:#d08770;">Times</span><span> (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag) (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag)
+</span><span>  | </span><span style="color:#d08770;">Div</span><span> unsafeFlag (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag) (</span><span style="color:#d08770;">Expr</span><span> unsafeFlag)
+</span></code></pre>
+<p>What's changed?</p>
+<ul>
+<li>We added a new type parameter <code>unsafeFlag</code>. <code>unsafeFlag</code> stands for a type subject to <code>TFlag</code>, that is, it is either <code>()</code> or <code>Void</code>. <code>()</code> stands for a type-level &quot;true&quot; of sorts, and <code>Void</code> stands for a type-level &quot;false&quot; --- you'll see why in a minute.</li>
+<li>The unsafe constructor <code>Div</code> has been tagged with <code>unsafeFlag</code>. As a result, it may only be used when <code>unsafeFlag</code> is <code>()</code>! If it were <code>Void</code>, you wouldn't be able to produce the required argument of type <code>unsafeFlag</code>.</li>
+<li>All other branches are left untouched, so they can be used normally.</li>
+</ul>
+<p>How would we write a function that deals with expressions?</p>
+<p>Functions that produce expressions are easy to write. Either your function may produce an expression that involves divisions, and you need to be explicit about it by setting <code>unsafeFlag</code> to be <code>()</code>:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">divExpr </span><span style="color:#b48ead;">:: Double -&gt; Double -&gt; Expr </span><span>()
+</span><span>divExpr x y = </span><span style="color:#d08770;">Div ()</span><span> (</span><span style="color:#d08770;">Literal</span><span> x) (</span><span style="color:#d08770;">Literal</span><span> y)
+</span></code></pre>
+<p>Or it can't, and you can get away with a generic <code>unsafeFlag</code>:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">plusExpr </span><span style="color:#b48ead;">:: TFlag </span><span style="color:#bf616a;">unsafeFlag </span><span style="color:#b48ead;">=&gt; Double -&gt; Double -&gt; Expr </span><span style="color:#bf616a;">unsafeFlag
+</span><span>plusExpr x y = </span><span style="color:#d08770;">Plus</span><span> (</span><span style="color:#d08770;">Literal</span><span> x) (</span><span style="color:#d08770;">Literal</span><span> y)
+</span></code></pre>
+<p>Functions that consume expressions are where it gets interesting. Either your function needs the safe version, and you need to be explicit about it by setting <code>unsafeFlag</code>. You can discard the unsafe branch <code>Div</code> by using the magical function <code>absurd</code>:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">safeEval </span><span style="color:#b48ead;">:: Expr Void -&gt; Double
+</span><span>safeEval (</span><span style="color:#d08770;">Literal</span><span> x) = x
+</span><span>safeEval (</span><span style="color:#d08770;">Plus</span><span> x y) = safeEval x + safeEval y
+</span><span>...
+</span><span>safeEval (</span><span style="color:#d08770;">Div</span><span> w x y) = absurd w
+</span></code></pre>
+<p>Or your function is able to deal with the unsafe version, in which case you will need to specify how to deal with the unsafe case. But thanks to the <code>whenFlag</code> method, your code will also work in the safe case:</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">eval </span><span style="color:#b48ead;">:: TFlag </span><span style="color:#bf616a;">unsafeFlag </span><span style="color:#b48ead;">=&gt; Expr </span><span style="color:#bf616a;">unsafeFlag </span><span style="color:#b48ead;">-&gt; Maybe Double
+</span><span>eval (</span><span style="color:#d08770;">Literal</span><span> x) = </span><span style="color:#d08770;">Just</span><span> x
+</span><span>eval (</span><span style="color:#d08770;">Plus</span><span> x y) = </span><span style="color:#8fa1b3;">(+) </span><span>&lt;$&gt; eval x &lt;*&gt; eval y
+</span><span>...
+</span><span>eval (</span><span style="color:#d08770;">Div</span><span> w x y) = whenFlag w $
+</span><span>  </span><span style="color:#b48ead;">if</span><span> eval y == </span><span style="color:#d08770;">Just 0.0
+</span><span>    </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Nothing
+</span><span>    </span><span style="color:#b48ead;">else </span><span style="color:#8fa1b3;">(/) </span><span>&lt;$&gt; eval x &lt;*&gt; eval y
+</span><span>  </span><span style="color:#65737e;">-- Note that testing equality between floating-point values
+</span><span>  </span><span style="color:#65737e;">-- is generally not a great idea.
+</span><span>  </span><span style="color:#65737e;">-- This here is just for exposition purposes :)
+</span></code></pre>
+<p>That's it, we've found a way to portably exclude some constructor at compile-time without any boilerplate, and write functions that work with either or both of the versions!</p>
+
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
